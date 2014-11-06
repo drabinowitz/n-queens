@@ -49,11 +49,11 @@ window.recursivelyGenerateBoards = function(n,exclusions,exitOnFirstSolution){
   var indexes = _.range(n);
   var even = n % 2 === 0;
   var firstHalf = even ? _.range(n/2) : _.range((n+1)/2); 
+  var boardSoFar = [];
 
-  var buildBoard = function(rowsLeft, boardSoFar){
+  var buildBoard = function(rowsLeft){
     //recurse to find all
     //possible outcomes (combinations)
-    boardSoFar = boardSoFar || [];
     if(rowsLeft===0){
       // var board = window.makeBoard(boardSoFar);
       // if (!board[test]()){
@@ -130,8 +130,10 @@ window.countNRooksSolutions = function(n) {
   return solution;
 };
 
-window.queenException = function(val,boardSoFar){
+//[0,1,2]
+//tests diagonals and column and row colis
 
+window.queenException = function(val,boardSoFar){
   return _.every(boardSoFar,function(prevVal,row){
 
     return val !== prevVal && val + boardSoFar.length !== prevVal + row && val - boardSoFar.length !== prevVal - row;
