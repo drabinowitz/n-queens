@@ -25,15 +25,20 @@
 */
 //takes in an array of the column index of each piece, each value represents its own row
 window.makeBoard = function(arr){
-  var board = [];
-  var row = _.map(arr, function(){
-    return 0;
-  });
-  _.each(arr, function(val){
-    row[val] = 1;
-    board.push(row.slice());
-    row[val] = 0;
-  });
+  var board;
+  if (arr.length > 0){  
+    board = [];
+    var row = _.map(arr, function(){
+      return 0;
+    });
+    _.each(arr, function(val){
+      row[val] = 1;
+      board.push(row.slice());
+      row[val] = 0;
+    });
+  } else {
+    board = {'n':0};
+  }
   return new Board(board);
 
 };
@@ -49,23 +54,22 @@ window.recursivelyGenerateBoards = function(n,test,exclusions,exitOnFirstSolutio
     //possible outcomes (combinations)
     boardSoFar = boardSoFar || [];
     if(rowsLeft===0){
-      var board = window.makeBoard(boardSoFar);
-      if (!board[test]()){
+      // var board = window.makeBoard(boardSoFar);
+      // if (!board[test]()){
         solution[0]++;
         if (exitOnFirstSolution){
-          solution[1] = board.rows();
+          solution[1] = boardSoFar.slice();
         }
-      }
-    }
-    if (!exitOnFirstSolution || !solution[1]){
+      // }
+    } else if (!exitOnFirstSolution || !solution[1]){
 
       _.each(indexes,function(val){
         isExcluded = false;
 
         if (exclusions(val,boardSoFar)){
-
-          buildBoard(rowsLeft-1, boardSoFar.concat(val) );
-          
+          boardSoFar.push(val);
+          buildBoard(rowsLeft-1, boardSoFar );
+          boardSoFar.pop();
         }
 
       });
@@ -76,11 +80,9 @@ window.recursivelyGenerateBoards = function(n,test,exclusions,exitOnFirstSolutio
   buildBoard(n);
 
   if (!solution[1]){
-    solution[1] = _.map(indexes,function(){
-      return _.map(indexes,function(){
-        return 0;
-      });
-    });
+    solution[1] = new Board({'n':n}).rows();
+  } else {
+    solution[1] = window.makeBoard(solution[1]).rows();
   }
   return solution;  
 };
