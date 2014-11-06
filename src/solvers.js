@@ -70,14 +70,14 @@ window.recursivelyGenerateBoards = function(n,exclusions,exitOnFirstSolution){
       if (boardSoFar.length === 0){
         for (var i = 0; i < firstHalf.length; i++){
           boardSoFar.push(firstHalf[i]);
-          buildBoard(rowsLeft-1, boardSoFar );
+          buildBoard(rowsLeft-1);
           boardSoFar.pop();
         }
       } else {
         for (var i = 0; i < indexes.length; i++){
           if (exclusions(indexes[i],boardSoFar)){
             boardSoFar.push(indexes[i]);
-            buildBoard(rowsLeft-1, boardSoFar );
+            buildBoard(rowsLeft-1);
             boardSoFar.pop();
           }
         }
