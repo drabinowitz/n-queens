@@ -47,6 +47,8 @@ window.recursivelyGenerateBoards = function(n,exclusions,exitOnFirstSolution){
   var solution;
   counter = 0;
   var indexes = _.range(n);
+  var even = n % 2 === 0;
+  var firstHalf = even ? _.range(n/2) : _.range((n+1)/2); 
 
   var buildBoard = function(rowsLeft, boardSoFar){
     //recurse to find all
@@ -55,21 +57,32 @@ window.recursivelyGenerateBoards = function(n,exclusions,exitOnFirstSolution){
     if(rowsLeft===0){
       // var board = window.makeBoard(boardSoFar);
       // if (!board[test]()){
-        counter++;
-        if (exitOnFirstSolution){
-          solution = boardSoFar.slice();
+        if ((!even && boardSoFar[0] === firstHalf.length - 1) || n === 0){
+          counter++;
+        } else {
+          counter+=2;
         }
+      if (exitOnFirstSolution){
+        solution = boardSoFar.slice();
+      }
       // }
     } else if (!exitOnFirstSolution || !solution){
-
-      _.each(indexes,function(val){
-        if (exclusions(val,boardSoFar)){
+      if (boardSoFar.length === 0){
+        _.each(firstHalf,function(val){
           boardSoFar.push(val);
           buildBoard(rowsLeft-1, boardSoFar );
           boardSoFar.pop();
-        }
+        });
+      } else {
+        _.each(indexes,function(val){
+          if (exclusions(val,boardSoFar)){
+            boardSoFar.push(val);
+            buildBoard(rowsLeft-1, boardSoFar );
+            boardSoFar.pop();
+          }
 
-      });
+        });
+      }
 
     }
   }
