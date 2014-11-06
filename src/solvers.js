@@ -68,20 +68,19 @@ window.recursivelyGenerateBoards = function(n,exclusions,exitOnFirstSolution){
       // }
     } else if (!exitOnFirstSolution || !solution){
       if (boardSoFar.length === 0){
-        _.each(firstHalf,function(val){
-          boardSoFar.push(val);
+        for (var i = 0; i < firstHalf.length; i++){
+          boardSoFar.push(firstHalf[i]);
           buildBoard(rowsLeft-1, boardSoFar );
           boardSoFar.pop();
-        });
+        }
       } else {
-        _.each(indexes,function(val){
-          if (exclusions(val,boardSoFar)){
-            boardSoFar.push(val);
+        for (var i = 0; i < indexes.length; i++){
+          if (exclusions(indexes[i],boardSoFar)){
+            boardSoFar.push(indexes[i]);
             buildBoard(rowsLeft-1, boardSoFar );
             boardSoFar.pop();
           }
-
-        });
+        }
       }
 
     }
