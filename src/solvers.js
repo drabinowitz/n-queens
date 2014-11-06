@@ -13,38 +13,127 @@
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n rooks placed such that none of them can attack each other
 
-window.findNRooksSolution = function(n) {
-  var solution = undefined; //fixme
+//we write some function that takes an array of twoples it creates a board of size equal to the 
+//length of the array, and then places a piece at row column indexes described be each of the twoples, and returns a board, not knowing if it's correct
 
-  console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
-  return solution;
+/* for example [0,2,2]
+
+[[1,0,0],
+ [0,0,1],
+ [0,0,1]]
+
+*/
+//takes in an array of the column index of each piece, each value represents its own row
+window.makeBoard = function(arr){
+  var board = [];
+  var row = _.map(arr, function(){
+    return 0;
+  });
+  _.each(arr, function(val){
+    row[val] = 1;
+    board.push(row.slice());
+    row[val] = 0;
+  });
+  return new Board(board);
+
+};
+
+window.recursivelyGenerateBoards = function(n,test,exclusions,exitOnFirstSolution){
+  var solution = [];
+  solution[0] = 0;
+  var indexes = _.range(n);
+
+  var buildBoard = function(rowsLeft, boardSoFar){
+    var isExcluded;
+    //recurse to find all
+    //possible outcomes (combinations)
+    boardSoFar = boardSoFar || [];
+    if(rowsLeft===0){
+      var board = window.makeBoard(boardSoFar);
+      if (!board[test]()){
+        solution[0]++;
+        if (exitOnFirstSolution){
+          solution[1] = board.rows();
+        }
+      }
+    }
+    if (!exitOnFirstSolution || !solution[1]){
+
+      _.each(indexes,function(val){
+        isExcluded = false;
+
+        if (exclusions(val,boardSoFar)){
+
+          buildBoard(rowsLeft-1, boardSoFar.concat(val) );
+          
+        }
+
+      });
+
+    }
+  }
+
+  buildBoard(n);
+
+  if (!solution[1]){
+    solution[1] = _.map(indexes,function(){
+      return _.map(indexes,function(){
+        return 0;
+      });
+    });
+  }
+  return solution;  
+};
+
+window.rookException = function(val,boardSoFar){
+
+  return _.every(boardSoFar,function(prevVal){
+
+    return val !== prevVal;
+
+  });
+
+};
+
+//in find NRooksSolution we keep calling 
+window.findNRooksSolution = function(n) {
+
+  var solution = window.recursivelyGenerateBoards(n,'hasAnyRooksConflicts',window.rookException,true);
+  console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution[1]));
+  return solution[1];
 };
 
 
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  var solutionCount = undefined; //fixme
-
-  console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
-  return solutionCount;
+  var solution = window.recursivelyGenerateBoards(n,'hasAnyRooksConflicts',window.rookException,false);
+  console.log('Number of solutions for ' + n + ' rooks:', solution[0]);
+  return solution[0];
 };
 
+window.queenException = function(val,boardSoFar){
 
+  return _.every(boardSoFar,function(prevVal,row){
+
+    return val !== prevVal && val + boardSoFar.length !== prevVal + row && val - boardSoFar.length !== prevVal - row;
+
+  });
+
+};
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution = undefined; //fixme
+  var solution = window.recursivelyGenerateBoards(n,'hasAnyQueensConflicts',window.queenException,true);
 
-  console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
-  return solution;
+  console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution[1]));
+  return solution[1];
 };
 
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-  var solutionCount = undefined; //fixme
-
-  console.log('Number of solutions for ' + n + ' queens:', solutionCount);
-  return solutionCount;
+  var solution = window.recursivelyGenerateBoards(n,'hasAnyQueensConflicts',window.queenException,false);
+  console.log('Number of solutions for ' + n + ' queens:', solution[0]);
+  return solution[0];
 };
