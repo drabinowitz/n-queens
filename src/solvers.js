@@ -57,7 +57,7 @@ window.recursivelyGenerateBoards = function(n,exclusions,exitOnFirstSolution){
     if(rowsLeft===0){
       // var board = window.makeBoard(boardSoFar);
       // if (!board[test]()){
-        if ((!even && boardSoFar[0] === firstHalf.length - 1) || n === 0){
+        if (!even && boardSoFar[0] === firstHalf.length - 1){
           counter++;
         } else {
           counter+=2;
@@ -97,6 +97,9 @@ window.recursivelyGenerateBoards = function(n,exclusions,exitOnFirstSolution){
     }
     return solution;      
   } else {
+    if (n === 0){
+      counter--;
+    }
     return counter;
   }
 };
